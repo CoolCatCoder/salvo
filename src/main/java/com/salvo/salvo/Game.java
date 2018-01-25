@@ -1,5 +1,7 @@
 package com.salvo.salvo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ public class Game {
         gamePlayerSet.add(gamePlayer);
     }
 
+    @JsonIgnore
     public List<Player> getPlayers() {
         return gamePlayerSet.stream().map(sub -> sub.getPlayer_playing()).collect(toList());
     }

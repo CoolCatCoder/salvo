@@ -1,6 +1,8 @@
 package com.salvo.salvo;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +64,7 @@ public class Player {           // Warning: You must define a default (no-argume
         gamePlayerSet.add(gamePlayer);
     }
 
+    @JsonIgnore
     public List<Game> getGames() {
         return gamePlayerSet.stream().map(sub -> sub.getGame()).collect(toList());
     }
