@@ -23,6 +23,7 @@ public class SalvoController {
     }
 
 }
+
 //    List<Object> getGameIds(Set<Game> allGames) {
 //        return allGames.stream().map(Game::getId).collect(Collectors::toList);
 //    }
