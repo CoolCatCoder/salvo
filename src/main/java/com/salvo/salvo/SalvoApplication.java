@@ -1,5 +1,6 @@
 package com.salvo.salvo;
 
+import com.salvo.salvo.ShipRepository;
 import com.sun.webkit.dom.KeyboardEventImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,7 +17,7 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository repository1, GameRepository repository2, GamePlayerRepository repository3) {
+	public CommandLineRunner initData(PlayerRepository repository1, GameRepository repository2, GamePlayerRepository repository3, ShipRepository repository4) {
 		return (args) -> {
 			// save a couple of players
 			Player Jack = new Player("jb@gmail.com");
@@ -46,7 +47,9 @@ public class SalvoApplication {
 
 
 			GamePlayer gp1 = new GamePlayer(game1, Jack);
+			GamePlayer gp2 = new GamePlayer(game1, Chloe);
 			repository3.save(gp1);
+			repository3.save(gp2);
 
 		};
 	}

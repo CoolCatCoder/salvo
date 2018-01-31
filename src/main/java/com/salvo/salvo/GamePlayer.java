@@ -1,9 +1,7 @@
 package com.salvo.salvo;
 
-import org.hibernate.annotations.Fetch;
-
 import javax.persistence.*;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 public class GamePlayer {
@@ -20,6 +18,9 @@ public class GamePlayer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="game_id")
     private Game game;
+
+    @OneToMany(mappedBy="gamePlayer", fetch = FetchType.EAGER)
+    private Set<Ship> shipSet= new HashSet<>();
 
     public GamePlayer() {}
 
@@ -49,4 +50,24 @@ public class GamePlayer {
         this.game = newGame;
     }
 
+    //For the value for the gamePlayers key, create a List with a Map for each GamePlayer.
+    public Map<String, Object> gPToDTO() {
+        Map<String, Object> gPDto = new LinkedHashMap<String, Object>();
+        gPDto.put("id", getId());         //In the Map for each GamePlayer, put keys and values for the GamePlayer ID and the player.
+        gPDto.put("player", getPlayer_playing());
+        return gPDto;
+    }
+
+    public void addShip(Ship ship){
+        ship.setGamePlayer(this);
+        shipSet.add(ship);
+    }
+
+    public Set<Ship> getShipSet() {
+        return shipSet;
+    }
+
+    public void setShipSet(Set<Ship> shipSet) {
+        this.shipSet = shipSet;
+    }
 }

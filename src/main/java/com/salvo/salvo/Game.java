@@ -3,9 +3,8 @@ package com.salvo.salvo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -15,7 +14,6 @@ public class Game {
     @Id    // says that the id instance variable holds the database key for this class.
     @GeneratedValue(strategy = GenerationType.AUTO)  // tells JPA to get the Id from the DBMS.
     private long id;
-
     private Date creationDate = new Date();
 
     @OneToMany(mappedBy= "game", fetch=FetchType.EAGER) //Why "game?"
@@ -45,11 +43,21 @@ public class Game {
     }
 
     @JsonIgnore
-    public List<Player> getPlayers() {
-        return gamePlayerSet.stream().map(sub -> sub.getPlayer_playing()).collect(toList());
+    public List<Object> getPlayers() {
+        return gamePlayerSet.stream()
+                .map(gamePlayer -> gamePlayer.gPToDTO())
+                .collect(Collectors.toList());
     }
 
 
+    //In the Map for each game, put keys and values for the game ID, creation date, and gamePlayers.
+    public Map<String, Object> toDTO() {
+        Map<String, Object> dto = new LinkedHashMap<String, Object>();
+        dto.put("id", getId());
+        dto.put("created", getCreationDate());
+        dto.put("gamePlayers", getPlayers());
+        return dto;
+    }
 
 
 
