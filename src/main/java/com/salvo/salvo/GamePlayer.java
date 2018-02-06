@@ -50,13 +50,6 @@ public class GamePlayer {
         this.game = newGame;
     }
 
-    //For the value for the gamePlayers key, create a List with a Map for each GamePlayer.
-    public Map<String, Object> gPToDTO() {
-        Map<String, Object> gPDto = new LinkedHashMap<String, Object>();
-        gPDto.put("id", getId());         //In the Map for each GamePlayer, put keys and values for the GamePlayer ID and the player.
-        gPDto.put("player", getPlayer_playing());
-        return gPDto;
-    }
 
     public void addShip(Ship ship){
         ship.setGamePlayer(this);
