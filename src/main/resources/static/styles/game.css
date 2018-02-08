@@ -1,0 +1,33 @@
+body{
+    background-color: white;
+}
+th {
+    background-color: black; 
+    color:white;
+    font-size: 14px;
+    text-align: center;
+    width: 20px;
+    height: 20px;
+}
+#game_table{
+    background-color: royalblue;
+ 
+}
+.letter_index{
+    background-color: black;
+    color: white;
+    width:22px;
+    height:21px;
+    font-size:13px;
+}
+td {
+border: 1px solid black; 
+text-align: center;
+width, height: 20px;
+}
+table.no-spacing {
+  border-spacing:0; /* Removes the cell spacing via CSS */
+  border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
+}
+
+
