@@ -39,11 +39,11 @@ public class Game {
         gamePlayerSet.add(gamePlayer);
     }
 
+    public Set<GamePlayer> getGamePlayerSet() {
+        return gamePlayerSet;
+    }
 
-
-
-
-
-
-
+    public void setGamePlayerSet(Set<GamePlayer> gamePlayerSet) {
+        this.gamePlayerSet = gamePlayerSet;
+    }
 }
