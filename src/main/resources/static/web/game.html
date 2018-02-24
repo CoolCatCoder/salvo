@@ -10,14 +10,28 @@
 
 <body>
     <h1>Enjoy your SALVO game!</h1>
-    <table class="table no-spacing" id="gameTable" >
-         <thead id="table-headers">
-         </thead>
-         <tbody id="table-rows">
-         </tbody>
-      </table>
-
+    <div id="tableContainer">
+    <div>
+    <h2>Ship Grid</h2>
+    <table class="table no-spacing" id="shipTable">
+        <thead id="table-headers">
+        </thead>
+        <tbody id="table-rows">
+        </tbody>
+    </table>
+    </div>
     
+    <div>
+    <h2>Salvo Grid</h2>
+    <table class="table no-spacing" id="salvoTable">
+        <thead id="salvo-headers">
+        </thead>
+        <tbody id="salvo-rows">
+        </tbody>
+    </table>
+    </div>
+</div>
+
     <script src="/scripts/game.js"></script>
 
 </body>

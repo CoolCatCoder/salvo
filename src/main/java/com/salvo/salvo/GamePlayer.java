@@ -30,7 +30,7 @@ public class GamePlayer {
     public GamePlayer(Game game, Player player_playing) {
         this.game = game;
         this.player_playing = player_playing;
-        joinDate = new Date();
+     //   joinDate = new Date();
     }
 
     public long getId (){
@@ -52,7 +52,6 @@ public class GamePlayer {
     public void setGame(Game newGame){
         this.game = newGame;
     }
-
 
     public void addShip(Ship ship){
         ship.setGamePlayer(this);
@@ -79,4 +78,9 @@ public class GamePlayer {
     public void setSalvoSet(Set<Salvo> salvoSet) {
         this.salvoSet = salvoSet;
     }
+
+    public Optional<Score> getScore(){
+        return player_playing.getScore(game);
+    }
+
 }

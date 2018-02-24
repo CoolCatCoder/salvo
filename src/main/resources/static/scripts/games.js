@@ -1,29 +1,43 @@
 $(function () {
-    var $games = $('#games'); //Here we cache the DOM so we only have to look at it once
+    var data; //Here we cache the DOM so we only have to look at it once
+
     $.ajax({
         type: 'GET',
         url: '/api/games',
-        success: function (games) {
-
-            $.each(games, function (i, game) {
-
-                var creationDate = new Date(game.created).toLocaleString();
-
-                console.log(creationDate);
-                // I have to change the games, beacuse there will be only 2 players and also every game needs a player to be created.      
-
-                if (game.gamePlayers.length > 0) {
-                    //                    $games.append('<li>' + creationDate + ':');
-                    //                    var userNames = [];
-                    //                    for (var w = 0; w < game.gamePlayers.length; w++) {
-                    //                        userNames.push(game.gamePlayers[w].player.userName);
-                    //                    }
-                    $games.append('<li>' + creationDate + ': ' + game.gamePlayers[0].player.userName + ', ' + game.gamePlayers[1].player.userName + '</li>');
-
-                } else {
-                    $games.append('<li>' + creationDate + '</li>');
-                }
-            });
+        success: function (data) {
+            var games = data.games;
+            var leaderboard = data.leaderboard;
+            console.log(games);
+            console.log(games[0].gamePlayers[0].player.username);
+            console.log(leaderboard);
+                                createGameList(games);
+                              createLeaderboard(leaderboard);
+            
         }
     });
+
+    function createGameList(games) {
+        
+        for (var i = 0; i < games.length; i++) {
+            var creationDate = new Date(games[i].created).toLocaleString();
+            var player1 = games[i].gamePlayers[0].player.username;
+            var player2 = games[i].gamePlayers[1].player.username;
+            
+         $("#gamelist").append("<li>" + creationDate + ": " + player1 + " vs. " + player2 + "</li>");
+        }
+       
+    }
+
+    function createLeaderboard(leaderboard){
+        
+        $("#leaderboard").append("<tr><th>Name</th><th>Total</th><th>Won</th><th>Lost</th><th>Tied</th></tr>");
+        for (var i=0; i<leaderboard.length; i++) {
+            var total = (leaderboard[i].total_score).toFixed(1);
+            $("#leaderboard").append("<tr><td>" + leaderboard[i].name + "</td>" + "<td>" + total + "</td>" + "<td>" + leaderboard[i].total_wins + "</td>" + "<td>" + leaderboard[i].total_losses + "</td>" + "<td>" + leaderboard[i].total_ties + "</td></tr>")
+        }
+        
+    }
+
+
+
 });

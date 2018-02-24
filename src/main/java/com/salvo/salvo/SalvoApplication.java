@@ -1,14 +1,30 @@
 package com.salvo.salvo;
 
-import com.salvo.salvo.ShipRepository;
-import com.sun.webkit.dom.KeyboardEventImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.WebAttributes;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 @SpringBootApplication
 public class SalvoApplication {
@@ -19,15 +35,16 @@ public class SalvoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository repository1, GameRepository repository2, GamePlayerRepository repository3, ShipRepository repository4, SalvoRepository repository5) {
+	public CommandLineRunner initData(PlayerRepository repository1, GameRepository repository2, GamePlayerRepository repository3,
+									  ShipRepository repository4, SalvoRepository repository5, ScoreRepository repository6) {
 		return (args) -> {
 
-				Player Jack = new Player("j.bauer@ctu.gov");
-				Player Chloe = new Player("c.obrian@ctu.gov");
-				Player Kim = new Player("kim_bauer@gmail.com");
-				Player Tony =  new Player ("t.almeida@ctu.gov");
-				Player David = new Player("davidpalmer@freemail.com");
-				Player Michelle = new Player("m.dessler@gmail.com");
+				Player Jack = new Player("j.bauer@ctu.gov","24");
+				Player Chloe = new Player("c.obrian@ctu.gov","42");
+				Player Kim = new Player("kim_bauer@gmail.com","kb");
+				Player Tony =  new Player ("t.almeida@ctu.gov","mole");
+				Player David = new Player("davidpalmer@freemail.com","dp");
+				Player Michelle = new Player("m.dessler@gmail.com","md");
 
 				repository1.save(Jack);
 				repository1.save(Chloe);
@@ -104,6 +121,7 @@ public class SalvoApplication {
 				Ship gp1_g3_ship1= new Ship(gp1_g3, "Destroyer", Arrays.asList("B5", "C5", "D5"));
 				Ship gp1_g3_ship2= new Ship(gp1_g3, "Patrol Boat", Arrays.asList("C6", "C7"));
 				Ship gp2_g3_ship1= new Ship(gp2_g3, "Submarine", Arrays.asList("A2", "A3", "A4"));
+
 				Ship gp2_g3_ship2= new Ship(gp2_g3, "Patrol Boat", Arrays.asList("G6", "H6"));
 
 				repository4.save(gp1_g3_ship1);
@@ -146,11 +164,6 @@ public class SalvoApplication {
 			    repository5.save(new Salvo(gp1_g3, 2, Arrays.asList("A2", "A3","D8")));
 			    repository5.save(new Salvo(gp2_g3, 2, Arrays.asList("E1","F2","G3")));
 
-			    repository5.save(new Salvo(gp1_g3, 1, Arrays.asList("G6", "H6", "A4")));
-			    repository5.save(new Salvo(gp2_g3, 1, Arrays.asList("H1", "H2", "H3")));
-			    repository5.save(new Salvo(gp1_g3, 2, Arrays.asList("A2", "A3","D8")));
-			    repository5.save(new Salvo(gp2_g3, 2, Arrays.asList("E1","F2","G3")));
-
 			    repository5.save(new Salvo(gp1_g4, 1, Arrays.asList("A3", "A4", "F7")));
 			    repository5.save(new Salvo(gp2_g4, 1, Arrays.asList("B5", "C6", "H1")));
 			    repository5.save(new Salvo(gp1_g4, 2, Arrays.asList("A2", "G6","H6")));
@@ -162,9 +175,94 @@ public class SalvoApplication {
                 repository5.save(new Salvo(gp2_g5, 2, Arrays.asList("C6","D6","E6")));
                 repository5.save(new Salvo(gp2_g5, 3, Arrays.asList("H1","H8")));
 
+                Date newDate1 = Date.from(date1.toInstant().plusSeconds(1800));
+                Date newDate2 = Date.from(date2.toInstant().plusSeconds(1800));
+                Date newDate3 = Date.from(date3.toInstant().plusSeconds(1800));
+                Date newDate4 = Date.from(date4.toInstant().plusSeconds(1800));
+
+                repository6.save(new Score(gp1_g1,1.0, newDate1));
+                repository6.save(new Score(gp2_g1,0.0, newDate1));
+			    repository6.save(new Score(gp1_g2,0.5, newDate2));
+			    repository6.save(new Score(gp2_g2,0.5, newDate2));
+			    repository6.save(new Score(gp1_g3,1.0, newDate3));
+			    repository6.save(new Score(gp2_g3,0.0, newDate3));
+			    repository6.save(new Score(gp1_g4,0.5, newDate4));
+			    repository6.save(new Score(gp2_g4,0.5, newDate4));
 
 			};
 	}
 
+}
 
+@Configuration
+class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+//The job of this new class is to take the name someone has entered for log in,
+// search the database with that name, and return a UserDetails object with name,
+// password, and role information for that user, if any.
+	@Autowired
+	PlayerRepository playerRepository;
+
+	@Override
+	public void init(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService());
+	}
+
+	@Bean
+	UserDetailsService userDetailsService() {
+		return new UserDetailsService() {
+
+			@Override
+			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+				List<Player> players = playerRepository.findByUserName(username);
+				if (!players.isEmpty()) {
+					Player player = players.get(0);
+					return new User(player.getUserName(), player.getPassWord(),
+							AuthorityUtils.createAuthorityList("USER"));
+				} else {
+					throw new UsernameNotFoundException("Unknown user: " + username);
+				}
+			}
+		};
+	}
+}
+
+@EnableWebSecurity
+@Configuration
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+				.antMatchers("/web/games.html", "/styles/games.css", "/scripts/games.js").permitAll()
+				.antMatchers("/api/login", "/api/games").permitAll()
+				.anyRequest().fullyAuthenticated()
+				.and().formLogin()
+				.usernameParameter("username")
+				.passwordParameter("pwd")
+				.loginProcessingUrl("/api/login");
+
+		http.logout().logoutUrl("/api/logout");
+
+		// turn off checking for CSRF tokens
+		http.csrf().disable();
+
+		// if user is not authenticated, just send an authentication failure response
+		http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if login is successful, just clear the flags asking for authentication
+		http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
+
+		// if login fails, just send an authentication failure response
+		http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+
+		// if logout is successful, just send a success response
+		http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
+	}
+
+	private void clearAuthenticationAttributes(HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+		}
+	}
 }

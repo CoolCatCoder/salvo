@@ -1,12 +1,13 @@
 package com.salvo.salvo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.GeneratedValue;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +20,32 @@ public class SalvoController {
 
     @Autowired
     private GameRepository repo;
-
+    @Autowired
+    private PlayerRepository repoPlayers;
     @Autowired
     private GamePlayerRepository repoGp;
 
     @RequestMapping("/games")
+
+    public Map<String, Object> makeLeaderboard() {
+        Map<String, Object> map = new LinkedHashMap<>();
+//       map.put("player", getCurrentUser(authentication));
+        map.put("games", getAllGames());
+        map.put("leaderboard", playersScoreInfo());
+        return map;
+    }
+
+//    public Map<String, Object> getCurrentUser(Authentication authentication){
+//        Player currentPlayer;
+//        Map<String, Object> currentUser =  new LinkedHashMap<>();
+//        currentUser.put("name", repoPlayers.findOneByUserName(authentication.getName()));
+//        return currentUser;
+//    }
+//
+//    private boolean isGuest(Authentication authentication) {
+//        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+//    }
+
     public List<Object> getAllGames() {
         return repo.findAll()
                 .stream()
@@ -31,6 +53,40 @@ public class SalvoController {
                 .collect(Collectors.toList());
     }
 
+    public List<Object> playersScoreInfo() {
+        return repoPlayers.findAll()
+                .stream()
+                .map(player ->makeScoreInfo(player) )
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> makeScoreInfo(Player player){
+    Map <String, Object> playerInfo = new LinkedHashMap<>();
+    Set<Score> allScores = player.getScoreSet();
+        double total = 0;
+        int win = 0;
+        int loss = 0;
+        int tie = 0;
+        for (Score score: allScores) {
+
+        if (score.getScore() == 1.0){
+            win++;
+            total = total + 1.0;
+        }else if (score.getScore() == 0.0){
+            loss++;
+        }else if(score.getScore() == 0.5){
+            tie++;
+            total = total + 0.5;
+        }
+    }
+
+    playerInfo.put("name", player.getUserName());
+    playerInfo.put("total_score", total);
+    playerInfo.put("total_wins", win);
+    playerInfo.put("total_losses", loss);
+    playerInfo.put("total_ties", tie);
+    return playerInfo;
+}
 
 
     @RequestMapping("/game_view/{gamePlayerId}")
@@ -46,7 +102,6 @@ public class SalvoController {
         viewGame.put("gamePlayers", getGamePlayers(gamePlayer.getGame()));
         viewGame.put("ships", getMyShips(gamePlayer));
         viewGame.put("salvoes", getAllSalvoes(gamePlayer.getGame().getGamePlayerSet()));
-      //  viewGame.put("salvoes", getDTOSalvoes(getAllSalvoes(gamePlayer.getGame().getGamePlayerSet())));
         return viewGame;
 }
 
@@ -62,10 +117,24 @@ public class SalvoController {
 
     public Map<String, Object> makeGamePlayerDTO(GamePlayer gamePlayer) {
         Map<String, Object> gPDto = new LinkedHashMap<String, Object>();
-        gPDto.put("id", gamePlayer.getId());         //In the Map for each GamePlayer, put keys and values for the GamePlayer ID and the player.
-        gPDto.put("player", gamePlayer.getPlayer_playing());
+        Score score= gamePlayer.getScore().orElse(null);
+        gPDto.put("id", gamePlayer.getId());
+        gPDto.put("player", makePlayerDTO(gamePlayer.getPlayer_playing()));  //I HAVE CHANGED IT AND THE HTML IS NOT WORKING NOW!!!
+            if (score != null) {
+            gPDto.put("score", score.getScore());
+        }else{
+            gPDto.put("score", null);
+        }
         return gPDto;
     }
+
+    public Map<String, Object> makePlayerDTO (Player player){
+        Map<String, Object> pDto = new LinkedHashMap<>();
+        pDto.put("id", player.getId());
+        pDto.put("username", player.getUserName());
+        return pDto;
+    }
+
 
     public Map<String, Object> makeShipsDTO(Ship ship) {
         Map<String, Object> sDto = new LinkedHashMap<String, Object>();
@@ -73,14 +142,6 @@ public class SalvoController {
         sDto.put("locations", ship.getShipLocations());
         return sDto;
     }
-
-//    public Map<String, Object> makeSalvoesDTO(Salvo salvo) {
-//        Map<String, Object> svDto = new LinkedHashMap<String, Object>();
-//        svDto.put("turn", salvo.getTurn());
-//        svDto.put("player", salvo.getGamePlayer().getPlayer_playing().getId());   //OR JUST PLAYER ID????
-//        svDto.put("locations", salvo.getSalvoLocations());
-//        return svDto;
-//    }
 
 
     public List<Object> getGamePlayers(Game game) {
@@ -140,24 +201,10 @@ public class SalvoController {
         return bigMap;
     }
 
-//    @JsonIgnore
-//    public List<Object> getAllSalvoes(Set <GamePlayer> gamePlayerSet) {
-//        return gamePlayerSet.stream()
-//                .map(gamePlayer -> gamePlayer.getSalvoSet())
-//                .collect(Collectors.toList());
-//    }
 
-//    @JsonIgnore
-//    public List<Object> getDTOSalvoes(List <Salvo> getAllSalvoes) {
-//        return getAllSalvoes.stream()
-//                .map(salvo -> makeSalvoesDTO(salvo))
-//                .collect(Collectors.toList());
 }
 
 
-   //WHERE DO I PUT THE PATH VARIABLE AND WHERE DO I USE THE GAME PLAYERS REPOSITORY?????
 
-    //Annotate the method with @RequestMapping to map the URL /game_view/nn to that method.
-    //Annotate the method parameter with @PathVariable to extract the desired game player ID nn from the URL as a long integer.
 
 

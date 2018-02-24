@@ -13,8 +13,11 @@ public class Game {
     private long id;
     private Date creationDate = new Date();
 
-    @OneToMany(mappedBy= "game", fetch=FetchType.EAGER) //Why "game?"
+    @OneToMany(mappedBy = "game", fetch=FetchType.EAGER) //Why "game?"
             Set<GamePlayer> gamePlayerSet;
+
+    @OneToMany(mappedBy = "score", fetch=FetchType.EAGER)
+            Set<Score> scoreSet;
 
     public Game(){ }
 
@@ -24,6 +27,10 @@ public class Game {
 
     public long getId (){
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Date getCreationDate() {
@@ -39,11 +46,24 @@ public class Game {
         gamePlayerSet.add(gamePlayer);
     }
 
+    public void addScore(Score score) {
+        score.setGame(this);
+        scoreSet.add(score);
+    }
+
     public Set<GamePlayer> getGamePlayerSet() {
         return gamePlayerSet;
     }
 
     public void setGamePlayerSet(Set<GamePlayer> gamePlayerSet) {
         this.gamePlayerSet = gamePlayerSet;
+    }
+
+    public Set<Score> getScoreSet(){
+        return scoreSet;
+    }
+
+    public void setScoreSet(Set<Score> scoreSet) {
+        this.scoreSet = scoreSet;
     }
 }

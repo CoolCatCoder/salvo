@@ -61,4 +61,5 @@ import java.util.List;
     public void setShipLocations(List<String> shipLocations) {
         this.shipLocations = shipLocations;
     }
+
 }

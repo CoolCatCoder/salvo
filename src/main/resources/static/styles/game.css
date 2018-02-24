@@ -1,6 +1,7 @@
 body{
     background-color: white;
 }
+
 th {
     background-color: black; 
     color:white;
@@ -9,25 +10,37 @@ th {
     width: 20px;
     height: 20px;
 }
-#game_table{
-    background-color: royalblue;
- 
+
+#tableContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
+
+#tableContainer h2{
+    text-align: center;
+    margin: 2%;
+}
+
 .letter_index{
     background-color: black;
     color: white;
-    width:22px;
-    height:21px;
-    font-size:13px;
+    width: 22px;
+    height: 21px;
+    font-size: 13px;
 }
+
 td {
 border: 1px solid black; 
 text-align: center;
 width, height: 20px;
 }
+
 table.no-spacing {
   border-spacing:0; /* Removes the cell spacing via CSS */
   border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
 }
+
+
 
 

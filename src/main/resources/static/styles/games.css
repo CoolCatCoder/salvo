@@ -1,0 +1,10 @@
+td,th {
+    border: 1px solid black;
+    margin : 2px;
+    padding : 2px; 
+   width : 100px;
+}
+table.no-spacing {
+  border-spacing:0; /* Removes the cell spacing via CSS */
+  border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
+}
