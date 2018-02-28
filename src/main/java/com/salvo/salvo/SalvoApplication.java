@@ -219,7 +219,7 @@ class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
 					return new User(player.getUserName(), player.getPassWord(),
 							AuthorityUtils.createAuthorityList("USER"));
 				} else {
-					throw new UsernameNotFoundException("Unknown user: " + username);
+					throw new UsernameNotFoundException("Username " + username + " not found");
 				}
 			}
 		};
@@ -232,16 +232,19 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/web/games.html", "/styles/games.css", "/scripts/games.js").permitAll()
-				.antMatchers("/api/login", "/api/games").permitAll()
-				.anyRequest().fullyAuthenticated()
-				.and().formLogin()
-				.usernameParameter("username")
-				.passwordParameter("pwd")
-				.loginProcessingUrl("/api/login");
+		http
+				.authorizeRequests()  // Who can see what
+				      .antMatchers("/web/games.html","/styles/games.css", "/scripts/games.js",
+							  "/styles/copy_waves.jpg", "/styles/faviconit/favicon.ico").permitAll()
+				      .antMatchers("/api/login", "/api/games", "/api/players").permitAll()
+				      .anyRequest().fullyAuthenticated() //ANY other I forgot, only if fully authenticated
+				      .and()    // and() is separating authorizeRequests() from formLogin()
+				.formLogin()
+				      .usernameParameter("username")  //By default Spring understands them as "username" and "password"
+				      .passwordParameter("password")
+				      .loginProcessingUrl("/api/login");
 
-		http.logout().logoutUrl("/api/logout");
+		http.logout().logoutUrl("/api/logout");   // where am I going to tell you to perform a logout
 
 		// turn off checking for CSRF tokens
 		http.csrf().disable();

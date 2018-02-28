@@ -2,16 +2,13 @@ package com.salvo.salvo;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,24 +24,23 @@ public class SalvoController {
 
     @RequestMapping("/games")
 
-    public Map<String, Object> makeLeaderboard() {
+    public Map<String, Object> makeLeaderboard(Authentication authentication) {
         Map<String, Object> map = new LinkedHashMap<>();
-//       map.put("player", getCurrentUser(authentication));
+        if (authentication != null){
+            map.put("player", makePlayerDTO(getCurrentUser(authentication)));
+        }
         map.put("games", getAllGames());
         map.put("leaderboard", playersScoreInfo());
         return map;
     }
 
-//    public Map<String, Object> getCurrentUser(Authentication authentication){
-//        Player currentPlayer;
-//        Map<String, Object> currentUser =  new LinkedHashMap<>();
-//        currentUser.put("name", repoPlayers.findOneByUserName(authentication.getName()));
-//        return currentUser;
-//    }
-//
-//    private boolean isGuest(Authentication authentication) {
-//        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-//    }
+    public Player getCurrentUser(Authentication authentication){
+       return repoPlayers.findOneByUserName(authentication.getName());
+    }
+
+    private boolean isGuest(Authentication authentication) {
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
+    }
 
     public List<Object> getAllGames() {
         return repo.findAll()
@@ -88,6 +84,26 @@ public class SalvoController {
     return playerInfo;
 }
 
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createPlayer(@RequestParam String username, @RequestParam String password) {
+        if (username == null) {
+            return new ResponseEntity<>(makeMap("error", "No username"), HttpStatus.FORBIDDEN);
+        } else if (password == null){
+            return new ResponseEntity<>(makeMap("error", "No password"), HttpStatus.FORBIDDEN);
+        }
+        Player player = repoPlayers.findOneByUserName(username);
+        if (player != null) {
+            return new ResponseEntity<>(makeMap("error", "Name already in use"), HttpStatus.CONFLICT);
+        }
+        player = repoPlayers.save(new Player(username, password));
+        return new ResponseEntity<>(makeMap("username", player.getUserName()), HttpStatus.CREATED);
+    }
+
+    private Map<String, Object> makeMap(String key, Object value) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(key, value);
+        return map;
+    }
 
     @RequestMapping("/game_view/{gamePlayerId}")
     private Object getGameView (@PathVariable long gamePlayerId){

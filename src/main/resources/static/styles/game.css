@@ -1,14 +1,18 @@
-body{
+body {
     background-color: white;
+    background-image: url(/styles/copy_waves.jpg);
+    background-color: #cccccc;
+    background-size: 250px;
+    font-family: 'Belleza', sans-serif;
 }
 
 th {
-    background-color: black; 
-    color:white;
-    font-size: 14px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
     text-align: center;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
 }
 
 #tableContainer {
@@ -17,12 +21,12 @@ th {
     justify-content: space-around;
 }
 
-#tableContainer h2{
+#tableContainer h2 {
     text-align: center;
     margin: 2%;
 }
 
-.letter_index{
+.letter_index {
     background-color: black;
     color: white;
     width: 22px;
@@ -31,16 +35,16 @@ th {
 }
 
 td {
-border: 1px solid black; 
-text-align: center;
-width, height: 20px;
+    border: 1.5px solid black;
+    text-align: center;
+    width,
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 table.no-spacing {
-  border-spacing:0; /* Removes the cell spacing via CSS */
-  border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
+    border-spacing: 0;
+    /* Removes the cell spacing via CSS */
+    border-collapse: collapse;
+    /* Optional - if you don't want to have double border where cells touch */
 }
-
-
-
-

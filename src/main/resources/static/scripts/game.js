@@ -6,6 +6,8 @@ $(function () {
     var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
     //console.log(letters[2]);
 
+    document.getElementById("logout-button").addEventListener("click", logout);
+
     $.ajax({
         type: 'GET',
         url: '/api/game_view/' + pullGamePlayerID(),
@@ -119,7 +121,7 @@ $(function () {
         var mySalvoes = {};
 
         if (gamePlayers[0].id == viewerID) {
-           console.log(gamePlayers[0].player.id);  
+            console.log(gamePlayers[0].player.id);
             mySalvoes = allSalvoes[gamePlayers[0].player.id];
             var mySalvoesTurn1 = mySalvoes[1];
             var mySalvoesTurn2 = mySalvoes[2];
@@ -171,15 +173,15 @@ $(function () {
             for (var i = 0; i < oppSalvoesTurn1.length; i++) {
 
                 console.log($('#' + oppSalvoesTurn1[i]).css('background-color'));
-                
-                if($('#' + oppSalvoesTurn1[i]).css('background-color')=='rgb(128, 128, 128)'){
-                    $('#' + oppSalvoesTurn1[i]).css('background-color', 'rgb(255, 165, 0)').html(1);      
+
+                if ($('#' + oppSalvoesTurn1[i]).css('background-color') == 'rgb(128, 128, 128)') {
+                    $('#' + oppSalvoesTurn1[i]).css('background-color', 'rgb(255, 165, 0)').html(1);
                 }
             }
 
             for (var i = 0; i < oppSalvoesTurn2.length; i++) {
-                if($('#' + oppSalvoesTurn2[i]).css('background-color')=='rgb(128, 128, 128)'){
-                    $('#' + oppSalvoesTurn2[i]).css('background-color', 'rgb(255, 165, 0)').html(2);      
+                if ($('#' + oppSalvoesTurn2[i]).css('background-color') == 'rgb(128, 128, 128)') {
+                    $('#' + oppSalvoesTurn2[i]).css('background-color', 'rgb(255, 165, 0)').html(2);
                 }
             }
 
@@ -194,21 +196,38 @@ $(function () {
             for (var i = 0; i < oppSalvoesTurn1.length; i++) {
 
                 console.log($('#' + oppSalvoesTurn1[i]).css('background-color'));
-                
-                if($('#' + oppSalvoesTurn1[i]).css('background-color')=='rgb(128, 128, 128)'){
-                    $('#' + oppSalvoesTurn1[i]).css('background-color', 'rgb(255, 165, 0)').html(1);      
+
+                if ($('#' + oppSalvoesTurn1[i]).css('background-color') == 'rgb(128, 128, 128)') {
+                    $('#' + oppSalvoesTurn1[i]).css('background-color', 'rgb(255, 165, 0)').html(1);
                 }
             }
 
             for (var i = 0; i < oppSalvoesTurn2.length; i++) {
-                if($('#' + oppSalvoesTurn2[i]).css('background-color')=='rgb(128, 128, 128)'){
-                    $('#' + oppSalvoesTurn2[i]).css('background-color', 'rgb(255, 165, 0)').html(2);      
+                if ($('#' + oppSalvoesTurn2[i]).css('background-color') == 'rgb(128, 128, 128)') {
+                    $('#' + oppSalvoesTurn2[i]).css('background-color', 'rgb(255, 165, 0)').html(2);
                 }
             }
         }
-
-
     }
+
+    function logout(evt) {
+        evt.preventDefault();
+        $.post("/api/logout", )
+            .done(function () {
+                setTimeout(function () {
+                    window.location.href = "games.html";
+                }, 3000);
+                console.log("Logout successful!");
+                $("#gamelist_title").html("Are you ready to Salvo???");
+                $("#logout-form").addClass("hidden");
+                $("#login-form").removeClass("hidden");
+                $("#login-form input").val("");
+            })
+            .fail(function () {
+                alert("Logout failed, please try again!");
+            })
+    }
+
 
     function showGameInfo(game_view) {
 

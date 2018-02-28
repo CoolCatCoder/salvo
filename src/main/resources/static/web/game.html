@@ -6,31 +6,35 @@
     <title>My Game Page</title>
     <link rel="stylesheet" href="/styles/game.css" type="text/css">
     <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Belleza" rel="stylesheet">
 </head>
 
 <body>
     <h1>Enjoy your SALVO game!</h1>
+    <form id="logout-form" onsubmit="return false" class="hidden">
+        <button type="button" id="logout-button">Log out</button>
+    </form>
     <div id="tableContainer">
-    <div>
-    <h2>Ship Grid</h2>
-    <table class="table no-spacing" id="shipTable">
-        <thead id="table-headers">
-        </thead>
-        <tbody id="table-rows">
-        </tbody>
-    </table>
+        <div>
+            <h2>Ship Grid</h2>
+            <table class="table no-spacing" id="shipTable">
+                <thead id="table-headers">
+                </thead>
+                <tbody id="table-rows">
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <h2>Salvo Grid</h2>
+            <table class="table no-spacing" id="salvoTable">
+                <thead id="salvo-headers">
+                </thead>
+                <tbody id="salvo-rows">
+                </tbody>
+            </table>
+        </div>
     </div>
-    
-    <div>
-    <h2>Salvo Grid</h2>
-    <table class="table no-spacing" id="salvoTable">
-        <thead id="salvo-headers">
-        </thead>
-        <tbody id="salvo-rows">
-        </tbody>
-    </table>
-    </div>
-</div>
 
     <script src="/scripts/game.js"></script>
 

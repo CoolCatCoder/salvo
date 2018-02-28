@@ -6,24 +6,30 @@
     <title>Home Page</title>
     <link rel="stylesheet" href="/styles/games.css" type="text/css">
     <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+    <link rel="shortcut icon" href="/styles/faviconit/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Belleza" rel="stylesheet">
+
+
 </head>
 
 <body>
-    <h1 id="gamelist_title">My Salvo Games!!!</h1>
+    <h1 id="gamelist_title">Are you ready to Salvo???</h1>
 
     <form id="login-form" onsubmit="return false">
-        <label>Userame: <input type="text" name="username"></label>
-        <label>Password: <input type="text" name="pwd"></label>
+        <label>Username: <input type="email" name="username" required></label>
+        <label>Password: <input type="password" name="password"></label>
+        <button type="button" id="login-button">Log In</button>
+        <button type="button" id="signup-button">Sign Up</button>
     </form>
 
-    <form id="logout-form" onsubmit="return false">
-        <button>Log out</button>
+    <form id="logout-form" onsubmit="return false" class="hidden">
+        <button type="button" id="logout-button">Log out</button>
     </form>
-    
+
     <ol id="gamelist"></ol>
-    
+
     <table class="no-spacing" id="leaderboard"></table>
-    
+
     <script src="/scripts/games.js"></script>
 </body>
 

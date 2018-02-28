@@ -1,10 +1,32 @@
-td,th {
-    border: 1px solid black;
-    margin : 2px;
-    padding : 2px; 
-   width : 100px;
+body {
+    background-image: url(/styles/copy_waves.jpg);
+    background-color: #cccccc;
+    background-size: 250px;
+    font-family: 'Belleza', sans-serif;
 }
+
+td,
+th {
+    border: 1px solid black;
+    margin: 2px;
+    padding: 2px;
+    width: 100px;
+    background-color: white;
+}
+
+ol {
+    background-color: white;
+    width: 500px;
+
+}
+
 table.no-spacing {
-  border-spacing:0; /* Removes the cell spacing via CSS */
-  border-collapse: collapse;  /* Optional - if you don't want to have double border where cells touch */
+    border-spacing: 0;
+    /* Removes the cell spacing via CSS */
+    border-collapse: collapse;
+    /* Optional - if you don't want to have double border where cells touch */
+}
+
+.hidden {
+    display: none;
 }
