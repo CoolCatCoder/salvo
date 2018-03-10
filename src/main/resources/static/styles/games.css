@@ -14,10 +14,14 @@ th {
     background-color: white;
 }
 
+table{
+    width:600px;
+}
+
 ol {
     background-color: white;
-    width: 500px;
-
+    width: 550px;
+margin: 10px 0;;
 }
 
 table.no-spacing {
@@ -29,4 +33,8 @@ table.no-spacing {
 
 .hidden {
     display: none;
+}
+
+input.join {
+    margin-left: 10px;
 }

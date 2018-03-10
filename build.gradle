@@ -31,7 +31,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-rest')
 	compile("org.springframework.boot:spring-boot-starter-security") //adding the security framework
     compile('org.springframework.boot:spring-boot-starter-web')
-	//runtime('com.h2database:h2')
+	//  runtime('com.h2database:h2')
 	compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
 	//telling IntellJ that spring will work with mysql
 	testCompile('org.springframework.boot:spring-boot-starter-test')

@@ -35,7 +35,12 @@ public class SalvoController {
     }
 
     public Player getCurrentUser(Authentication authentication){
+
+        if (isGuest(authentication)){
+            return null;
+        }   else   {
        return repoPlayers.findOneByUserName(authentication.getName());
+        }
     }
 
     private boolean isGuest(Authentication authentication) {
@@ -99,6 +104,65 @@ public class SalvoController {
         return new ResponseEntity<>(makeMap("username", player.getUserName()), HttpStatus.CREATED);
     }
 
+    @RequestMapping(path = "/games", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+        Player currentPlayer = getCurrentUser(authentication);
+        if (authentication != null){
+            Game newGame = repo.save(new Game());
+            GamePlayer newGamePlayer = repoGp.save(new GamePlayer(newGame, currentPlayer));
+            return new ResponseEntity<>(makeMap("newGamePlayerId", newGamePlayer.getId()), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(makeMap("error","Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @RequestMapping(path = "/game/{gameId}/players", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> joinGame(Authentication authentication, @PathVariable long gameId){
+        Player currentPlayer = getCurrentUser(authentication);
+
+        if (authentication != null){
+            Game currentGame = repo.findOne(gameId);
+            if (currentGame != null){
+                Set<GamePlayer> currentGPs = currentGame.getGamePlayerSet();
+                if (currentGPs.size() == 2){
+                    return new ResponseEntity<>(makeMap("error", "This game is full"), HttpStatus.FORBIDDEN);
+                } else {
+                    GamePlayer alreadyGp = currentGPs.stream().findFirst().orElse(null);  //Find 1st of set, we know there is something there, have to put null
+                    if (alreadyGp.getPlayer_playing().getId() != currentPlayer.getId()){
+                    GamePlayer joinedGamePlayer = repoGp.save(new GamePlayer(currentGame, currentPlayer));
+                               //If i can add something in the set, that means that it currently doesn´t exist in it...
+                        return new ResponseEntity<>(makeMap("joinedGamePlayerId", joinedGamePlayer.getId()), HttpStatus.CREATED);
+                    }  else{
+                         return new ResponseEntity<>(makeMap("error", "Player already joined"),HttpStatus.FORBIDDEN);
+                        }
+                }
+            } else {
+                return new ResponseEntity<>(makeMap("error", "No game found"), HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(makeMap("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+//    @RequestMapping(path = "/game/{gameID}/players", method = RequestMethod.POST)
+//    public ResponseEntity<Map<String, Object>> joinGame(@PathVariable long gameID, Authentication authentication){
+//        Player playa = getCurrentUser(authentication);
+//        if(playa == null){
+//            return new ResponseEntity<>(makeMap("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+//        } else {
+//            Game thisGame = repo.findOne(gameID);
+//            if (thisGame == null) {
+//                return new ResponseEntity<>(makeMap("error", "No such game"), HttpStatus.FORBIDDEN);
+//            } else if(thisGame.getGamePlayerSet().size() == 2) {
+//                return new ResponseEntity<>(makeMap("error", "Game is full"), HttpStatus.FORBIDDEN);
+//            } else {
+//                GamePlayer nuGP = new GamePlayer(thisGame, playa);
+//                repoGp.save(nuGP);
+//                return new ResponseEntity<>(makeMap("gpid", nuGP.getId()), HttpStatus.CREATED);
+//            }
+//        }
+//    }
+
     private Map<String, Object> makeMap(String key, Object value) {
         Map<String, Object> map = new HashMap<>();
         map.put(key, value);
@@ -106,8 +170,13 @@ public class SalvoController {
     }
 
     @RequestMapping("/game_view/{gamePlayerId}")
-    private Object getGameView (@PathVariable long gamePlayerId){
-        return gameView(repoGp.findOne(gamePlayerId));
+    private ResponseEntity<Object> getGameView (@PathVariable long gamePlayerId, Authentication authentication){
+        GamePlayer loggedUser = repoGp.findOne(gamePlayerId);
+        if (getCurrentUser(authentication).getId() == loggedUser.getPlayer_playing().getId()){
+            return new ResponseEntity<>(gameView(loggedUser), HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>(makeMap("error", "Unauthorized access"), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     public Map<String,Object> gameView(GamePlayer gamePlayer){

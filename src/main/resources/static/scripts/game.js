@@ -12,14 +12,19 @@ $(function () {
         type: 'GET',
         url: '/api/game_view/' + pullGamePlayerID(),
         success: function (game_view) {
-
+            var gamePlayers = game_view.gamePlayers;
+            
             console.log(gameplayerID);
             showGameInfo(game_view);
             renderHeaders(numbers);
             renderShipRows(letters);
             renderSalvoRows(letters);
-            showMyShips(game_view);
-            showMySalvoes(game_view);
+            
+            if (gamePlayers.length ==2){
+             showMyShips(game_view, gamePlayers);
+             showMySalvoes(game_view, gamePlayers);   
+            }
+            
         }
     });
 
@@ -94,7 +99,7 @@ $(function () {
         return (false);
     }
 
-    function showMyShips(game_view) {
+    function showMyShips(game_view, gamePlayers) {
 
         var ships = game_view.ships;
         var allShipsLocations = [];
@@ -113,8 +118,8 @@ $(function () {
         showOppSalvoes(game_view);
     }
 
-    function showMySalvoes(game_view) {
-        var gamePlayers = game_view.gamePlayers;
+    function showMySalvoes(game_view, gamePlayers) {
+        
         var viewerID = pullGamePlayerID();
         var allSalvoes = game_view.salvoes;
 
@@ -237,12 +242,19 @@ $(function () {
 
         console.log(viewerID);
 
-        if (gamePlayers[0].player.id == viewerID) {
-            $("#tableContainer").before("<h2>" + gamePlayers[0].player.username + " vs. " + gamePlayers[1].player.username + "<h2>");
-        } else {
-            $("#tableContainer").before("<h2>" + gamePlayers[1].player.username + " vs. " + gamePlayers[0].player.username + "</h2>");
+        if (gamePlayers.length != 0) {
+            if (gamePlayers.length == 2) {
+                if (gamePlayers[0].player.id == viewerID) {
+                    $("#tableContainer").before("<h2>" + gamePlayers[0].player.username + " vs. " + gamePlayers[1].player.username + "<h2>");
+                } else {
+                    $("#tableContainer").before("<h2>" + gamePlayers[1].player.username + " vs. " + gamePlayers[0].player.username + "</h2>");
+                }
+ 
+            } else if (gamePlayers.length == 1){
+                $("#tableContainer").before("<h2>" + gamePlayers[0].player.username + " vs. " + "someone who will soon join the game!" + "<h2>");
+                
+            }
+
         }
-
-
     }
 });
